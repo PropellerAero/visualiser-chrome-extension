@@ -1,0 +1,11 @@
+{
+  "name": "@propelleraero/propeller-extension-client",
+  "version": "0.3.4",
+  "description": "Chrome extension client for local development",
+  "scripts": {
+    "build": "tsc --project ."
+  },
+  "keywords": [],
+  "author": "Kevin Velasco<me@kvnvelasco.com>",
+  "license": ""
+}

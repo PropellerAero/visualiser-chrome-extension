@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Propeller Developer",
+  "description": "Propeller extension for developers and staff",
+  "version": "1.0",
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_icon": "src/icons/logo-main.png"
+  },
+  "host_permissions": [
+    "*://*.prpellr.com/*",
+    "*://*.prpeller.com/*"
+  ],
+  "externally_connectable": {
+    "matches": [
+      "https://*.prpellr.com/*",
+      "https://*.prpeller.com/*"
+    ]
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "declarativeNetRequest",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "src/workers/index.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.prpellr.com/*"
+      ],
+      "js": [
+        "src/productionBanner/productionBanner.ts"
+      ],
+      "css": []
+    }
+  ]
+}

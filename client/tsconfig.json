@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "CommonJS",
+
+    "strict": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "removeComments": false,
+    "lib": ["es2019", "dom"],
+    "types": ["chrome-types"]
+  },
+  "include": ["./*.ts"]
+}
