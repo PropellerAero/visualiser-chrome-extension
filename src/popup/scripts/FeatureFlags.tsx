@@ -1,32 +1,37 @@
-import { useEffect, useState } from "react";
-import {
-  clearFeatureFlagOverride,
-  getThenListenForFlagEvals,
-} from "../../common/storage";
-import {
-  Button,
-  Checkbox,
-  Chip,
-  FormControlLabel,
-  FormGroup,
-  Icon,
-  Paper,
-  Stack,
-  Switch,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useFeatureFlagOverrides } from "./storage";
+import { useEffect, useRef, useState } from "react";
+import { Paper, Stack, Typography } from "@mui/material";
 import { CheckCircle, CancelOutlined } from "@mui/icons-material";
+import { initialize, LDClient } from "launchdarkly-js-client-sdk";
+
+// @ts-expect-error
+const envKey = import.meta.env.VITE_LD_ENVKEY || "";
 
 export default function FeatureFlags() {
-  const [flags, setFlags] = useState<Record<string, boolean>>({
-    "vis-special-foo-project": true,
-    "vis-that-boo-thing": false,
-    "vis-super-long-lorem-ipsum-style-key-for-some-reason-or-another-example-key":
-      true,
-    x1: false,
-  });
+  const [flags, setFlags] = useState<Record<string, boolean>>({});
+
+  const client = useRef<LDClient>();
+
+  useEffect(() => {
+    if (!envKey) {
+      throw new Error("Missing VITE_LD_ENVKEY in .env");
+    }
+
+    client.current = initialize(envKey, {
+      kind: "user",
+      key: "00000000000000000000000000000000000000000000",
+      name: "foo",
+    });
+
+    client.current.on("ready", () => {
+      const newFlags = client.current?.allFlags() as Record<string, boolean>;
+      console.log(client.current?.allFlags());
+      setFlags(newFlags);
+    });
+
+    return () => {
+      client.current?.close();
+    };
+  }, []);
 
   return (
     <Stack spacing={1}>
