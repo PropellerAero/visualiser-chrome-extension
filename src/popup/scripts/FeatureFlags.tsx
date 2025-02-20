@@ -6,79 +6,50 @@ import {
 import {
   Button,
   Checkbox,
+  Chip,
   FormControlLabel,
   FormGroup,
+  Icon,
   Paper,
   Stack,
   Switch,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useFeatureFlagOverrides } from "./storage";
-import { CheckBox } from "@mui/icons-material";
+import { CheckCircle, CancelOutlined } from "@mui/icons-material";
 
 export default function FeatureFlags() {
-  const [evals, setEvals] = useState({} as Record<string, boolean>);
-  const [search, setSearch] = useState("");
-  const [overrides, setOverrides] = useFeatureFlagOverrides();
-  useEffect(() => {
-    return getThenListenForFlagEvals(setEvals);
-  }, []);
+  const [flags, setFlags] = useState<Record<string, boolean>>({
+    "vis-special-foo-project": true,
+    "vis-that-boo-thing": false,
+    "vis-super-long-lorem-ipsum-style-key-for-some-reason-or-another-example-key":
+      true,
+    x1: false,
+  });
 
   return (
     <Stack spacing={1}>
-      <TextField
-        fullWidth
-        size="small"
-        label="Search"
-        value={search}
-        onChange={(ev) => setSearch(ev.target.value)}
-      />
       <Stack
         spacing={1}
         sx={{ maxHeight: 300, overflowY: "auto", marginBottom: 4 }}
       >
-        {Object.keys(evals)
-          .filter((value) => (search ? value.includes(search) : true))
-          .map((flag) => {
-            return (
-              <Paper sx={{ padding: 2 }} key={flag}>
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <Stack>
-                    <strong>{flag}</strong>
-                    <small>Evaluated to: {JSON.stringify(evals[flag])}</small>
-                  </Stack>
-                  <Stack>
-                    {overrides.data[flag] != null ? (
-                      <Button
-                        onClick={async () => {
-                          await clearFeatureFlagOverride(flag);
-                          return overrides.refetch();
-                        }}
-                        size="small"
-                      >
-                        Clear
-                      </Button>
-                    ) : (
-                      <small>Override</small>
-                    )}
-                    <Switch
-                      disabled={!overrides.data}
-                      checked={overrides.data[flag] ?? evals[flag]}
-                      onChange={(ev) =>
-                        setOverrides({
-                          [flag]: ev.target.checked,
-                        })
-                      }
-                    />
-                  </Stack>
-                </Stack>
-              </Paper>
-            );
-          })}
+        {Object.keys(flags).map((flag) => {
+          return (
+            <Paper sx={{ padding: 1 }} key={flag}>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                {flags[flag] ? (
+                  <CheckCircle color="success" />
+                ) : (
+                  <CancelOutlined color="disabled" />
+                )}
+                <Typography fontSize={14} fontFamily="monospace" noWrap>
+                  {flag}
+                </Typography>
+              </Stack>
+            </Paper>
+          );
+        })}
       </Stack>
     </Stack>
   );
