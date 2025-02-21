@@ -7,7 +7,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "lib": ["ES2019"],
+    "lib": ["ESNext", "DOM"],
     "types": ["chrome-types"]
   },
   "include": ["popup/**/*", "workers/**/*"]

@@ -1,15 +1,26 @@
 import { useEffect, useState } from "react";
-import { Checkbox, Paper, Stack, Typography } from "@mui/material";
+import {
+  Button,
+  IconButton,
+  Paper,
+  Stack,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/material";
 import {
   initializeClient,
   getFeatureFlagValue,
 } from "@propelleraero/launch-darkly-client";
+import { HStack } from "./common/HStack";
+import { ContentCopy } from "@mui/icons-material";
 
 // @ts-expect-error
 const envKey = import.meta.env.VITE_LD_ENVKEY || "";
 
 export default function FeatureFlags() {
   const [flags, setFlags] = useState<Record<string, boolean>>({});
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     setFlags({});
@@ -44,22 +55,52 @@ export default function FeatureFlags() {
 
   return (
     <Stack spacing={1}>
+      <TextField
+        fullWidth
+        size="small"
+        label="Search"
+        value={search}
+        onChange={(ev) => setSearch(ev.target.value)}
+      />
       <Stack
         spacing={1}
         sx={{ maxHeight: 300, overflowY: "auto", marginBottom: 4 }}
       >
-        {Object.keys(flags).map((flag) => {
-          return (
-            <Paper sx={{ padding: 1 }} key={flag}>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                {flags[flag] && <Checkbox color="success" />}
-                <Typography fontSize={14} fontFamily="monospace" noWrap>
-                  {flag}
-                </Typography>
-              </Stack>
-            </Paper>
-          );
-        })}
+        {Object.keys(flags)
+          .filter((value) => (search ? value.includes(search) : true))
+          .map((flag) => {
+            return (
+              <Paper sx={{ padding: 2 }} key={flag}>
+                <HStack justifyContent="space-between" alignItems="center">
+                  <Stack>
+                    <HStack alignItems="center">
+                      <Typography fontFamily="monospace">{flag}</Typography>
+                      <IconButton
+                        onClick={() => new Clipboard().writeText(flag)}
+                        sx={{ color: "gray" }}
+                      >
+                        <ContentCopy sx={{ fontSize: 15 }} />
+                      </IconButton>
+                    </HStack>
+                    <small>
+                      Evaluated to: {JSON.stringify(flags[flag])} by{" "}
+                      <strong>overrides</strong>
+                    </small>
+                  </Stack>
+                  <Stack direction={"row"}>
+                    {flags[flag] != null ? (
+                      <Button onClick={() => {}} size="small">
+                        Clear
+                      </Button>
+                    ) : (
+                      <small>Override</small>
+                    )}
+                    <Switch checked={flags[flag]} onChange={() => {}} />
+                  </Stack>
+                </HStack>
+              </Paper>
+            );
+          })}
       </Stack>
     </Stack>
   );
