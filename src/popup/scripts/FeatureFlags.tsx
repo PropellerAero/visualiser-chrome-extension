@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { Paper, Stack, Typography } from "@mui/material";
-import { CheckCircle, CancelOutlined } from "@mui/icons-material";
-import { initialize, LDClient } from "launchdarkly-js-client-sdk";
+import { useEffect, useState } from "react";
+import { Checkbox, Paper, Stack, Typography } from "@mui/material";
+import {
+  initializeClient,
+  getFeatureFlagValue,
+} from "@propelleraero/launch-darkly-client";
 
 // @ts-expect-error
 const envKey = import.meta.env.VITE_LD_ENVKEY || "";
@@ -9,28 +11,35 @@ const envKey = import.meta.env.VITE_LD_ENVKEY || "";
 export default function FeatureFlags() {
   const [flags, setFlags] = useState<Record<string, boolean>>({});
 
-  const client = useRef<LDClient>();
-
   useEffect(() => {
+    setFlags({});
     if (!envKey) {
       throw new Error("Missing VITE_LD_ENVKEY in .env");
     }
 
-    client.current = initialize(envKey, {
-      kind: "user",
-      key: "00000000000000000000000000000000000000000000",
-      name: "foo",
-    });
-
-    client.current.on("ready", () => {
-      const newFlags = client.current?.allFlags() as Record<string, boolean>;
-      console.log(client.current?.allFlags());
-      setFlags(newFlags);
-    });
-
-    return () => {
-      client.current?.close();
-    };
+    initializeClient(
+      { launchDarklyClientSideID: envKey, timeoutInMilliseconds: 5000 },
+      {
+        email: "",
+        id: "",
+        firstName: "",
+        lastName: "",
+        isSuperUser: true,
+      },
+      {
+        organizationId: "",
+      }
+    )
+      .then(() => {
+        return getFeatureFlagValue(
+          "xyz-123-test-feature-flag-for-chrome-ext",
+          false
+        );
+      })
+      .then((flag) => {
+        console.log("got ", flag);
+        setFlags({ "xyz-123-test-feature-flag-for-chrome-ext": flag });
+      });
   }, []);
 
   return (
@@ -43,11 +52,7 @@ export default function FeatureFlags() {
           return (
             <Paper sx={{ padding: 1 }} key={flag}>
               <Stack direction="row" alignItems="center" spacing={1}>
-                {flags[flag] ? (
-                  <CheckCircle color="success" />
-                ) : (
-                  <CancelOutlined color="disabled" />
-                )}
+                {flags[flag] && <Checkbox color="success" />}
                 <Typography fontSize={14} fontFamily="monospace" noWrap>
                   {flag}
                 </Typography>
