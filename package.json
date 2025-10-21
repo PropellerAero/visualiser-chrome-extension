@@ -18,7 +18,7 @@
     "prettier": "^3.2.5",
     "react-query": "^3.39.3",
     "typescript": "^5.4.5",
-    "vite": "^5.4.20"
+    "vite": "^5.4.21"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
