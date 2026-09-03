@@ -21,7 +21,8 @@
     "activeTab",
     "tabs",
     "declarativeNetRequest",
-    "storage"
+    "storage",
+    "clipboardWrite"
   ],
   "background": {
     "service_worker": "src/workers/index.ts",
@@ -34,6 +35,15 @@
       ],
       "js": [
         "src/productionBanner/productionBanner.ts"
+      ],
+      "css": []
+    },
+    {
+      "matches": [
+        "https://*.api-staging.prpeller.com/*"
+      ],
+      "js": [
+        "src/annotation/content.ts"
       ],
       "css": []
     }
